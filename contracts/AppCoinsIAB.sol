@@ -1,5 +1,4 @@
 pragma solidity >=0.4.25 <0.7.0;
-pragma experimental ABIEncoderV2;
 
 import { Shares } from "./lib/Shares.sol";
 import { AppCoins } from "./AppCoins.sol";
@@ -39,52 +38,6 @@ contract AppCoinsIAB is AppCoinsIABInterface {
     event Buy(string packageName, string _sku, uint _amount, address _from, address _dev, address _appstore, address _oem, bytes2 countryCode);
     event OffChainBuy(address _wallet, bytes32 _rootHash);
 
-    struct OffChainBuyElements {
-        address wallet;
-        bytes32 rootHash;
-    }
-
-    /**
-    @notice Emits events informing offchain transactions for in-app-billing
-    @dev For each wallet passed as argument, the specified roothash is emited in a OffChainBuy event.
-    @param _elems List of OffChainBuyElements for which a OffChainBuy event will be issued
-    */
-    function informOffChainBuy2(OffChainBuyElements[] memory _elems) public {
-        for(uint i = 0; i < _elems.length; i++){
-            emit OffChainBuy(_elems[i].wallet, _elems[i].rootHash);
-        }
-    }
-
-    /**
-    @notice Emits an event informing offchain transactions for in-app-billing
-    @dev
-        For each wallet passed as argument, the specified roothash is emited in a OffChainBuy event.
-
-    @param _walletList List of wallets for which a OffChainBuy event will be issued
-    @param _rootHashList List of roothashs for given transactions
-    */
-    function testes(address _walletList, bytes32 _rootHashList)
-        public
-    {
-            emit OffChainBuy(_walletList,_rootHashList);
-    }
-
-    /**
-    @notice Emits events informing offchain transactions for in-app-billing
-    @dev For each wallet passed as argument, the specified roothash is emited in a OffChainBuy event.
-    @param _elem List of OffChainBuyElements for which a OffChainBuy event will be issued
-    */
-    function informOffChainBuy3(OffChainBuyElements memory _elem) public {
-        emit OffChainBuy(_elem.wallet, _elem.rootHash);
-    }
-
-    function play_test() public returns (bool) {
-        bytes32 ola = 0x111122223333444455556666777788889999AAAABBBBCCCCDDDDEEEEFFFFCCCC;
-        // OffChainBuyElements memory ola1 = OffChainBuyElements(msg.sender, ola);
-        // OffChainBuyElements[] storage ola2;
-        return true;
-    }
-
     /**
     @notice Emits an event informing offchain transactions for in-app-billing
     @dev
@@ -100,6 +53,20 @@ contract AppCoinsIAB is AppCoinsIABInterface {
         for(uint i = 0; i < _walletList.length; i++){
             emit OffChainBuy(_walletList[i],_rootHashList[i]);
         }
+    }
+
+    /**
+    @notice Emits an event informing offchain transactions for in-app-billing
+    @dev
+        For the wallet passed as argument, the specified roothash is emited in a OffChainBuy event.
+
+    @param _wallet wallet for which a OffChainBuy event will be issued
+    @param _rootHash roothash for given transaction
+    */
+    function informOffChainBuy(address _wallet, bytes32 _rootHash)
+        public
+    {
+        emit OffChainBuy(_wallet,_rootHash);
     }
 
     function buy(string memory _packageName, string memory _sku, uint256 _amount, address _addr_appc, address _dev, address _appstore, address _oem, bytes2 _countryCode) public returns (bool) {
