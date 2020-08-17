@@ -8,6 +8,7 @@ contract('Appcoins', (accounts) => {
             return instance.totalSupply({from: accounts[0]});
         })
         .then(result => {
+            console.log("RESULT: " + result);
             assert.true();
         })
         .catch(error => {
