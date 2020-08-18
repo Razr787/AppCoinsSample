@@ -78,39 +78,4 @@ print_balances_appcoins()
 print("\n###### END: BUY ######")
 ###### END: BUY ######
 
-###### INFORM OFFCHAIN BUY ######
-print("\n\n###### INFORM OFFCHAIN BUY ######")
-print_balances_appcoins()
-
-tx_params = appcoins_iab_contract.functions.informOffChainBuy([web3.eth.accounts[0]],[txid])\
-    .buildTransaction(get_params(web3.eth.accounts[0]))
-txid = Web3.toHex(web3.eth.sendTransaction(tx_params))
-print("TXID: {}".format(txid))
-print("\nAppCoins Transfer (Transaction):\n{}".format(web3.eth.getTransaction(txid)))
-
-receipt = web3.eth.getTransactionReceipt(txid)
-print("\nAppCoins OffChainBuy (Event):\n{}".format(
-    appcoins_iab_contract.events.OffChainBuy().processReceipt(receipt)))
-
-print_balances_appcoins()
-print("\n###### END: INFORM OFFCHAIN BUY ######")
-###### END: INFORM OFFCHAIN BUY ######
-
-###### INFORM SINGLE OFFCHAIN BUY ######
-print("\n\n###### INFORM SINGLE OFFCHAIN BUY ######")
-print_balances_appcoins()
-
-tx_params = appcoins_iab_contract.functions.informOffChainBuy(web3.eth.accounts[0],txid)\
-    .buildTransaction(get_params(web3.eth.accounts[0]))
-txid = Web3.toHex(web3.eth.sendTransaction(tx_params))
-print("TXID: {}".format(txid))
-print("\nAppCoins Transfer (Transaction):\n{}".format(web3.eth.getTransaction(txid)))
-
-receipt = web3.eth.getTransactionReceipt(txid)
-print("\nAppCoins OffChainBuy (Event):\n{}".format(
-    appcoins_iab_contract.events.OffChainBuy().processReceipt(receipt)))
-
-print_balances_appcoins()
-print("\n###### END: INFORM SINGLE OFFCHAIN BUY ######")
-###### END: INFORM SINGLE OFFCHAIN BUY ######
 

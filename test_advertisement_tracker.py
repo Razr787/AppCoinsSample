@@ -18,13 +18,13 @@ with open("build/contracts/AppCoins.json", "r") as f_handler:
 # Get AppCoins Contract
 appcoins_contract = web3.eth.contract(ContractAdress.APPCOINS.value, abi=contract_info["abi"])
 
-# Read AdvertisementTracker Contract
-with open("build/contracts/AdvertisementTracker.json", "r") as f_handler:
+# Read AppCoinsTracker Contract
+with open("build/contracts/AppCoinsTracker.json", "r") as f_handler:
     contract_info = loads(f_handler.read())
     f_handler.close()
 
-# Get AdvertisementTracker Contract
-advertisement_tracker_contract = web3.eth.contract(ContractAdress.ADVERTISEMENTTRACKER.value, abi=contract_info["abi"])
+# Get AppCoinsTracker Contract
+appcoins_tracker_contract = web3.eth.contract(ContractAdress.APPCOINSTRACKER.value, abi=contract_info["abi"])
 
 def print_balances_general(func, coin, call=False):
     i = 0
@@ -50,58 +50,10 @@ tx_params = appcoins_contract.functions.approve(ContractAdress.APPCOINSIAB.value
 txid = Web3.toHex(web3.eth.sendTransaction(tx_params))
 ###### END: APPROVE ######
 
-###### CREATE CAMPAIGN ######
-print("\n\n###### CREATE CAMPAIGN ######")
-
-tx_params = advertisement_tracker_contract.functions.createCampaign(txid, "packageName", [1,2,3], 1, 100, 1, 3, "endPoint")\
-    .buildTransaction(get_params(web3.eth.accounts[0]))
-txid_1 = Web3.toHex(web3.eth.sendTransaction(tx_params))
-print("TXID: {}".format(txid_1))
-print("\nTransfer (Transaction):\n{}".format(web3.eth.getTransaction(txid_1)))
-
-receipt = web3.eth.getTransactionReceipt(txid_1)
-print("\nCampaignLaunched (Event):\n{}".format(
-    advertisement_tracker_contract.events.CampaignLaunched().processReceipt(receipt)))
-
-print("\n###### END: CREATE CAMPAIGN ######")
-###### END: CREATE CAMPAIGN ######
-
-###### CANCEL CAMPAIGN ######
-print("\n\n###### CANCEL CAMPAIGN ######")
-
-tx_params = advertisement_tracker_contract.functions.cancelCampaign(txid)\
-    .buildTransaction(get_params(web3.eth.accounts[0]))
-txid_1 = Web3.toHex(web3.eth.sendTransaction(tx_params))
-print("TXID: {}".format(txid))
-print("\nTransfer (Transaction):\n{}".format(web3.eth.getTransaction(txid_1)))
-
-receipt = web3.eth.getTransactionReceipt(txid_1)
-print("\nCampaignCancelled (Event):\n{}".format(
-    advertisement_tracker_contract.events.CampaignCancelled().processReceipt(receipt)))
-
-print("\n###### END: CANCEL CAMPAIGN ######")
-###### END: CANCEL CAMPAIGN ######
-
-###### BULK REGISTER POA ######
-print("\n\n###### BULK REGISTER POA ######")
-
-tx_params = advertisement_tracker_contract.functions.bulkRegisterPoA(txid, txid, txid, 1)\
-    .buildTransaction(get_params(web3.eth.accounts[1]))
-txid = Web3.toHex(web3.eth.sendTransaction(tx_params))
-print("TXID: {}".format(txid))
-print("\nTransfer (Transaction):\n{}".format(web3.eth.getTransaction(txid)))
-
-receipt = web3.eth.getTransactionReceipt(txid)
-print("\nBulkPoARegistered (Event):\n{}".format(
-    advertisement_tracker_contract.events.BulkPoARegistered().processReceipt(receipt)))
-
-print("\n###### END: BULK REGISTER POA ######")
-###### END: BULK REGISTER POA ######
-
 ###### BULK CANCEL CAMPAIGN ######
 print("\n\n###### BULK CANCEL CAMPAIGN ######")
 
-tx_params = advertisement_tracker_contract.functions.cancelMultipleCampaigns([txid, txid_1, txid])\
+tx_params = appcoins_tracker_contract.functions.cancelCampaigns([txid, txid, txid])\
     .buildTransaction(get_params(web3.eth.accounts[0]))
 txid_1 = Web3.toHex(web3.eth.sendTransaction(tx_params))
 print("TXID: {}".format(txid))
@@ -109,25 +61,23 @@ print("\nTransfer (Transaction):\n{}".format(web3.eth.getTransaction(txid_1)))
 
 receipt = web3.eth.getTransactionReceipt(txid_1)
 print("\nCampaignCancelled (Event):")
-for elem in advertisement_tracker_contract.events.CampaignCancelled().processReceipt(receipt):
+for elem in appcoins_tracker_contract.events.CampaignCancelled().processReceipt(receipt):
     print(" - event: {}".format(elem))
     
 
 print("\n###### END: BULK CANCEL CAMPAIGN ######")
 ###### END: BULK CANCEL CAMPAIGN ######
 
-###### BULK CREATE CAMPAIGN ######
-print("\n\n###### BULK CREATE CAMPAIGN ######")
+###### BULK CREATE MULTIPLE CAMPAIGN ######
+print("\n\n###### BULK CREATE MULTIPLE CAMPAIGN ######")
 
-tx_params = advertisement_tracker_contract.functions.createMultipleCampaigns(
-    [txid, txid_1],
-    ["packageName2", "packageName3"], 
-    [[4,5,6],[7,8,6]],
-    [1, 3],
-    [100, 300],
-    [1,2], 
-    [3,6],
-    ["endPoint1","endPoint3"])\
+campaign_lauched_information = [
+    (txid, "packageName2", "endPoint1", [4,5,6], 1, 100, 1, 3),
+    (txid_1, "packageName3", "endPoint2", [1,2,3], 2, 200, 2, 6),
+]
+
+tx_params = appcoins_tracker_contract.functions.createCampaigns(
+    campaign_lauched_information)\
     .buildTransaction(get_params(web3.eth.accounts[0]))
 txid_1 = Web3.toHex(web3.eth.sendTransaction(tx_params))
 print("TXID: {}".format(txid_1))
@@ -135,30 +85,54 @@ print("\nTransfer (Transaction):\n{}".format(web3.eth.getTransaction(txid_1)))
 
 receipt = web3.eth.getTransactionReceipt(txid_1)
 print("\nCampaignLaunched (Event):")
-for elem in advertisement_tracker_contract.events.CampaignLaunched().processReceipt(receipt):
+for elem in appcoins_tracker_contract.events.CampaignLaunched().processReceipt(receipt):
     print(" - event: {}".format(elem))
 
 
-print("\n###### END: BULK CREATE CAMPAIGN ######")
-###### END: BULK CREATE CAMPAIGN ######
+print("\n###### END: BULK CREATE MULTIPLE CAMPAIGN ######")
+###### END: BULK CREATE MULTIPLE CAMPAIGN ######
 
-###### BULK BULK REGISTER POA ######
-print("\n\n###### BULK BULK REGISTER POA ######")
+###### BULK REGISTER POA MULTIPLE CAMPAIGNS ######
+print("\n\n###### BULK REGISTER POA MULTIPLE CAMPAIGNS ######")
 
-tx_params = advertisement_tracker_contract.functions.bulkRegisterPoaOfMultipleCampaigns(
-    [txid, txid_1], [txid, txid_1], [txid, txid_1], [1,2])\
-    .buildTransaction(get_params(web3.eth.accounts[1]))
+bulks_poa_information = [
+    (txid, txid, txid, 1),
+    (txid_1, txid_1, txid_1, 2),
+]
+
+tx_params = appcoins_tracker_contract.functions.bulkRegisterPoaOfMultipleCampaigns(bulks_poa_information).buildTransaction(get_params(web3.eth.accounts[1]))
 txid = Web3.toHex(web3.eth.sendTransaction(tx_params))
 print("TXID: {}".format(txid))
 print("\nTransfer (Transaction):\n{}".format(web3.eth.getTransaction(txid)))
 
 receipt = web3.eth.getTransactionReceipt(txid)
 print("\nBulkPoARegistered (Event):")
-for elem in advertisement_tracker_contract.events.BulkPoARegistered().processReceipt(receipt):
+for elem in appcoins_tracker_contract.events.BulkPoARegistered().processReceipt(receipt):
     print(" - event: {}".format(elem))
 
-print("\n###### END: BULK BULK REGISTER POA ######")
-###### END: BULK BULK REGISTER POA ######
+print("\n###### END: BULK REGISTER POA MULTIPLE CAMPAIGNS ######")
+###### END: BULK REGISTER POA MULTIPLE CAMPAIGNS ######
+
+###### INFORM MULTIPLE OFFCHAIN BUY ######
+print("\n\n###### INFORM MULTIPLE OFFCHAIN BUY ######")
+print_balances_appcoins()
+
+off_chain_buys = [(web3.eth.accounts[0],txid),(web3.eth.accounts[1],txid)]
+
+tx_params = appcoins_tracker_contract.functions.informOffChainBuys(off_chain_buys)\
+    .buildTransaction(get_params(web3.eth.accounts[0]))
+txid = Web3.toHex(web3.eth.sendTransaction(tx_params))
+print("TXID: {}".format(txid))
+print("\nOffChainBuy (Transaction):\n{}".format(web3.eth.getTransaction(txid)))
+
+receipt = web3.eth.getTransactionReceipt(txid)
+print("\nOffChainBuy (Event):\n{}")
+for elem in appcoins_tracker_contract.events.OffChainBuy().processReceipt(receipt):
+    print(" - event: {}".format(elem))
+
+print_balances_appcoins()
+print("\n###### END: INFORM MULTIPLE OFFCHAIN BUY ######")
+###### END: INFORM MULTIPLE OFFCHAIN BUY ######
 
 print_balances_ether()
 
